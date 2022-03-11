@@ -3,6 +3,9 @@ import json
 from channels.consumer import SyncConsumer, AsyncConsumer
 from channels.exceptions import StopConsumer
 from asgiref.sync import AsyncToSync
+from channels.db import database_sync_to_async
+
+from .models import Group, Chat
 
 
 class SyncView(SyncConsumer):
@@ -19,7 +22,10 @@ class SyncView(SyncConsumer):
     def websocket_receive(self, event):
         print("messaged received ", event)
         msg = json.loads(event['text'])
-        # print(msg['msg'])
+        print(msg['msg'])
+        group = Group.objects.get(name="friends")
+        chat = Chat.objects.create(content=msg['msg'], group=group)
+        print(chat)
         AsyncToSync(self.channel_layer.group_send)('friends',
                                                    {
                                                        'type': 'chat.message',
@@ -35,8 +41,8 @@ class SyncView(SyncConsumer):
         print('chat_message:', event)
         self.send(
             {
-                'type':'websocket.send',
-                'text':event['message']
+                'type': 'websocket.send',
+                'text': event['message']
             }
         )
 

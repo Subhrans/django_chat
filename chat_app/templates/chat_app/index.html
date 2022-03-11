@@ -15,7 +15,11 @@
         <h1>demo chat app</h1>
         <form>
             <div class="form-group">
-                <textarea class="form-control" id="chat-log" rows="3" disabled></textarea>
+                <textarea class="form-control" id="chat-log" rows="3" readonly>
+                    {% for chat in chats %}
+                        {{chat.content}}
+                    {% endfor %}
+                </textarea>
             </div>
         </form>
         <div class="form-group">
